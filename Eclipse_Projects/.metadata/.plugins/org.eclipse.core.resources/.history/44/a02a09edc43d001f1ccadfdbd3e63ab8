@@ -1,0 +1,43 @@
+// Sadam Hashi, smhashi, CIS 340, MP2
+
+public class Device {
+    private String sku;
+    private String name;
+    private boolean available;
+
+    public Device(String sku, String name, boolean available) {
+        this.sku = sku;
+        this.name = name;
+        this.available = available;
+    }
+
+    // Getters and Setters
+    public String getSku() {
+        return sku;
+    }
+
+    public void setSku(String sku) {
+        this.sku = sku;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("SKU: %s, Name: %s, Available: %s", sku, name, available ? "Yes" : "No");
+    }
+}

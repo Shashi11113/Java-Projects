@@ -1,0 +1,189 @@
+// Sadam Hashi, smhashi, CIS 340, MP2
+
+import java.util.ArrayList;
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+public class MP2 {
+    private Scanner scnr;
+    private ArrayList<Device> devices;
+
+    public MP2() {
+        devices = new ArrayList<>();
+        scnr = new Scanner(System.in);
+    }
+
+    public static void main(String[] args) {
+        MP2 app = new MP2();
+        app.SampleData();
+        app.displayMenu();
+    }
+
+    private void SampleData() {
+        devices.add(new Device("6757A", "Apple 9.7-inch iPad Pro", true));
+        devices.add(new Device("93P51B", "Amazon Kindle Fire Kids Edition", true));
+        devices.add(new Device("10N8C", "LeapFrog Epic Learning Tablet", true));
+        devices.add(new Device("85U2O", "Amazon Kindle Fire HD 8", true));
+        devices.add(new Device("91H2D", "HP Envy 8 Note", true));
+    }
+
+    private void displayMenu() {
+        int choice;
+        do {
+            System.out.println("\nLibrary Device Checkout System");
+            System.out.println("1. List devices by Title");
+            System.out.println("2. Add new devices");
+            System.out.println("3. Edit devices information");
+            System.out.println("4. Search by device name");
+            System.out.println("5. Check out devices");
+            System.out.println("6. List checked out devices");
+            System.out.println("7. Exit");
+            System.out.print("Select menu option (1-7): ");
+
+            try {
+                choice = scnr.nextInt();
+                scnr.nextLine(); // Consume newline
+            } catch (InputMismatchException err) {
+                System.out.println("Invalid input. Please enter a number between 1 and 7.");
+                scnr.next(); // Consume invalid input
+                choice = 0; // Ensure loop continues
+                continue;
+            }
+
+            switch (choice) {
+                case 1:
+                    listDevices();
+                    break;
+                case 2:
+                    addDevice();
+                    break;
+                case 3:
+                    editDevice();
+                    break;
+                case 4:
+                    searchDevice();
+                    break;
+                case 5:
+                    checkOutDevice();
+                    break;
+                case 6:
+                    listCheckedOutDevices();
+                    break;
+                case 7:
+                    System.out.println("Exiting...");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please select a number between 1 and 7.");
+            }
+        } while (choice != 7);
+    }
+
+    private void listDevices() {
+        System.out.println("\n#  	SKU    	Name");
+        int index = 1;
+        for (Device device : devices) {
+            if (device != null) {
+                System.out.printf("%-1d 	%1s  %5s  		%-20s%n", index++, device.getSku(), device.getName(), device.getStatus());
+            }
+        }
+        pause();
+    }
+
+    private void addDevice() {
+        if (devices.size() >= 10) {
+            System.out.println("\nUnable to add more devices\n");
+            pause();
+            return;
+        }
+
+        System.out.print("Enter SKU: ");
+        String sku = scnr.nextLine();
+        System.out.print("Enter Name: ");
+        String name = scnr.nextLine();
+
+        devices.add(new Device(sku, name, true));
+        System.out.println("Device added successfully.");
+        pause();
+    }
+
+    private void editDevice() {
+        System.out.print("Enter SKU of device to edit: ");
+        String sku = scnr.nextLine();
+
+        Device device = findDeviceBySku(sku);
+        if (device != null) {
+            System.out.print("Enter new Name: ");
+            String name = scnr.nextLine();
+            device.setName(name);
+            System.out.println("Device updated successfully.");
+        } else {
+            System.out.println("Device not found.");
+        }
+        pause();
+    }
+
+    private void searchDevice() {
+        System.out.print("Enter device name to search: ");
+        String name = scnr.nextLine();
+
+        System.out.println("\nSearch Results:");
+        for (Device device : devices) {
+            if (device != null && device.getName().toLowerCase().contains(name.toLowerCase())) {
+                System.out.printf("%s  %s  %s%n", device.getSku(), device.getName(), device.getStatus());
+            }
+        }
+        pause();
+    }
+
+    private void checkOutDevice() {
+        System.out.println("Available devices:");
+        int index = 1;
+        for (Device device : devices) {
+            if (device != null && device.isAvailable()) {
+                System.out.printf("%d. %s  %s  %s%n", index++, device.getSku(), device.getName(), device.getStatus());
+            }
+        }
+
+        System.out.print("Enter the number of device to check out: ");
+        try {
+            int choice = scnr.nextInt();
+            scnr.nextLine(); // Consume newline
+
+            if (choice > 0 && choice <= devices.size() && devices.get(choice - 1).isAvailable()) {
+                devices.get(choice - 1).setAvailable(false);
+                System.out.println("Device checked out successfully.");
+            } else {
+                System.out.println("Invalid choice or device already checked out.");
+            }
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input. Please enter a valid number.");
+            scnr.next(); // Consume invalid input
+        }
+        pause();
+    }
+
+    private void listCheckedOutDevices() {
+        System.out.println("Checked out devices:");
+        for (Device device : devices) {
+            if (device != null && !device.isAvailable()) {
+                System.out.printf("%s  %s  %s%n", device.getSku(), device.getName(), device.getStatus());
+            }
+        }
+        pause();
+    }
+
+    private Device findDeviceBySku(String sku) {
+        for (Device device : devices) {
+            if (device != null && device.getSku().equalsIgnoreCase(sku)) {
+                return device;
+            }
+        }
+        return null;
+    }
+
+    private void pause() {
+        System.out.print("Press Enter to continue...");
+        scnr.nextLine();
+    }
+}
+
